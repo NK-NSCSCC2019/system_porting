@@ -22,6 +22,10 @@ main.elf: start.o libinst.a
 \$@ 目标文件，\$^ 所有的依赖文件，\$< 第一个依赖文件
 **切记命令前面要用tab,直接复制命令可能会出错!**
 
+#### wildcard
+
+$(wildcard $(FILE))的意思是当前路径下的文件名匹配FILE的文件展开。假设当前路径下存在a.c 和 b.c,那么执行src=$(wildcard *.c),src的值就为a.c b.c；如果不使用通配符，比如src=$(wildcard c.c)；那么就是要展开当前路径下，文件名为c.c的文件，因为当前路径下文件不存在，因此src为空字符串。
+
 ### objcopy
 
 可以将目标文件拷贝成和原来的文件不一样的格式
@@ -65,3 +69,7 @@ ${CROSS_COMPILE}objdump -alD vmlinux > test.s
 ```
 
 这句无法停止,可能是因为结果文件太大,再加上-a编译选项时间过长
+
+### 生成的test.s无法编译
+
+生成的test.s带有太多冗余信息,无法编译,需要重新设计Makefile
