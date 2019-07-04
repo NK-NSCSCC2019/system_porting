@@ -2,7 +2,7 @@
 
 - [关于编译出的内核版本](#关于编译出的内核版本)
     - [vmlinux](#vmlinux)
-    - [vmlinux-1.0(目前只是个.config文件)](#vmlinux-10目前只是个config文件)
+    - [vmlinux-1.0(暂时弃用,比原本龙芯给的内核还大0.2M)](#vmlinux-10暂时弃用比原本龙芯给的内核还大02m)
         - [General SetUp](#general-setup)
             - [Automatically append version information to the version string](#automatically-append-version-information-to-the-version-string)
             - [RCU Implementation](#rcu-implementation)
@@ -33,7 +33,7 @@
 linux-2.6.32原版,未经过任何操作
 >但是怀疑这个原版是被龙芯修改过了
 
-## vmlinux-1.0(目前只是个.config文件)
+## vmlinux-1.0(暂时弃用,比原本龙芯给的内核还大0.2M)
 
 基本按照鸟哥的Linux私房菜书中的教程来编译的,记录一些不一样的选项.
 >书上提到但是make menuconfig中没有的不记录,默认不影响.书上没有的全部保持默认选项,后面不再提起.

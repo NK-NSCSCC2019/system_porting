@@ -7,7 +7,7 @@ all:
 
 compile:main.bin main.data convert
 	./convert
-	${CROSS_COMPILE}objdump -D vmlinux > test.s
+	${CROSS_COMPILE}objdump -D --no-show-raw-insn vmlinux > test.s
 	mkdir -p $(OBJDIR)
 	mv test.s    $(OBJDIR)/.
 	mv main.bin  $(OBJDIR)/.
@@ -40,5 +40,3 @@ help:
 	@echo "###     make clean: remove *.o, *.a, ./obj, and failure result"
 	@echo "###     make help : show help information"
 	@echo "###############################################################"
-
--include rules.make
