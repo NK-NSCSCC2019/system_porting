@@ -2,6 +2,7 @@
 
 - [关于编译出的内核版本](#关于编译出的内核版本)
     - [vmlinux](#vmlinux)
+        - [some](#some)
     - [vmlinux-1.0(暂时弃用,比原本龙芯给的内核还大0.2M)](#vmlinux-10暂时弃用比原本龙芯给的内核还大02m)
         - [General SetUp](#general-setup)
             - [Automatically append version information to the version string](#automatically-append-version-information-to-the-version-string)
@@ -21,6 +22,10 @@
             - [dnotify & inotify](#dnotify--inotify)
             - [Miscellaneous filesystems](#miscellaneous-filesystems)
         - [other](#other)
+    - [vmlinux-2.0](#vmlinux-20)
+        - [Kernel](#kernel)
+        - [device](#device)
+        - [other](#other-1)
 
 <!-- /TOC -->
 # 关于编译出的内核版本
@@ -28,10 +33,18 @@
 记录该文件夹下各个版本Linux内核的信息,方便后面出现bug的时候能够快速定位到问题所在.
 > 使用make menuconfig对内核进行选择编译
 
+另外因为文件夹中存在不同版本的vmlinux,在编译的时候记得修改Makefile选择自己想要的vmlinux进行编译
+
 ## vmlinux
 
 linux-2.6.32原版,未经过任何操作
->但是怀疑这个原版是被龙芯修改过了
+>怀疑内核被龙芯修改过了
+
+### some
+
+内核的字节序只能是小端法
+禁止了多线程MIPS MT options(Disable multithreading support)
+Timer frequency 250Hz
 
 ## vmlinux-1.0(暂时弃用,比原本龙芯给的内核还大0.2M)
 
@@ -126,3 +139,33 @@ Network device support只保留了一个和龙芯相关的
 ### other
 
 保留默认值,无改动
+
+## vmlinux-2.0
+
+>所有的改动基于vmlinux-1.0的基础上
+
+### Kernel
+
+取消了High Resolution Timer Support
+>High-Resolution Timer的作用是在纳秒级别处理内部时间分片。
+若是禁用High-Resolution Timer，那么内核是在毫秒级别处理内部时间分片。
+禁用掉High-Resolution Timer不会有问题，除非你的应用程序需要在纳秒级别处理时间分片。
+
+取消了Enable seccomp to safely compute untrusted bytecode
+>网上说嵌入式系统可以不选
+
+### device
+
+取消了SPI support
+取消了所有Character devices,包括virtual terminal(一个协议/接口,用于在各种连接环境中提供如同本机控制台一样的界面),virtual device support,unix98 PTY support(该配置项实际是对linux系统中devpts文件系统进行配置，如果需要使用“telnet”等服务的话，那么该选项必须选上),Legacy PTY support(功能未知),
+>对Character devices不是很了解
+
+### other
+
+裁剪了loadable module support/block layer里面的所有选项
+取消了Power management option,Networking support
+>可能对于Memory Technology Device还有可以修改的地方
+
+剩下的保持不变
+>可能Kernel hacking/Security options/Cryptographic API还有可以裁剪的地方
+后续改进还可以参考[清华的文档](https://github.com/z4yx/NaiveMIPS-HDL/blob/brd-NSCSCC/documentation/2017nscscc.pdf)
