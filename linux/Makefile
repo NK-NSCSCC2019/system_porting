@@ -1,13 +1,14 @@
 export CROSS_COMPILE ?= mipsel-linux-
 
 OBJDIR = ./obj
+kernel = vmlinux-2.0
 
 all:
 	make compile
 
 compile:main.bin main.data convert
 	./convert
-	${CROSS_COMPILE}objdump -D --no-show-raw-insn vmlinux > test.s
+	${CROSS_COMPILE}objdump -D --no-show-raw-insn ${kernel} > test.s
 	mkdir -p $(OBJDIR)
 	mv test.s    $(OBJDIR)/.
 	mv main.bin  $(OBJDIR)/.
@@ -15,10 +16,10 @@ compile:main.bin main.data convert
 	mv *.coe     $(OBJDIR)/.
 	mv *.mif     $(OBJDIR)/.
 
-main.bin:vmlinux
+main.bin:${kernel}
 	${CROSS_COMPILE}objcopy -O binary -j .text $< $@ 
 
-main.data:vmlinux
+main.data:${kernel}
 	${CROSS_COMPILE}objcopy -O binary -j .data $< $@ 
 
 convert:convert.c
