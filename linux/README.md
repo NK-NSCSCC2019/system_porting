@@ -26,6 +26,13 @@
         - [Kernel](#kernel)
         - [device](#device)
         - [other](#other-1)
+    - [vmlinux-3.0](#vmlinux-30)
+        - [General setup](#general-setup)
+        - [Kernel hacking](#kernel-hacking)
+        - [Cryptographic API](#cryptographic-api)
+        - [Library routines](#library-routines)
+        - [File System](#file-system)
+- [参考资料](#参考资料)
 
 <!-- /TOC -->
 # 关于编译出的内核版本
@@ -45,6 +52,7 @@ linux-2.6.32原版,未经过任何操作
 内核的字节序只能是小端法
 禁止了多线程MIPS MT options(Disable multithreading support)
 Timer frequency 250Hz
+kernel page size 16KB
 
 ## vmlinux-1.0(暂时弃用,比原本龙芯给的内核还大0.2M)
 
@@ -142,7 +150,7 @@ Network device support只保留了一个和龙芯相关的
 
 ## vmlinux-2.0
 
->所有的改动基于vmlinux-1.0的基础上
+所有的改动基于vmlinux-1.0
 
 ### Kernel
 
@@ -169,3 +177,49 @@ Network device support只保留了一个和龙芯相关的
 剩下的保持不变
 >可能Kernel hacking/Security options/Cryptographic API还有可以裁剪的地方
 后续改进还可以参考[清华的文档](https://github.com/z4yx/NaiveMIPS-HDL/blob/brd-NSCSCC/documentation/2017nscscc.pdf)
+
+## vmlinux-3.0
+
+所有的改动基于vmlinux-2.0
+
+### General setup
+
+去除Namespces support
+去除Kernel->user space relay support (formerly relayfs)
+>在某些文件系统上( 比如debugfs ) 提供从内核空间向用户空间传递大量数据的接口
+
+去除Support initial ramdisks compressed using bzip2
+去除Kernel performance events and counters
+>CPU性能监听器，包括CPU同一时间执行指令数，cache miss数，分支预测失败次数(Branch misprediction) 。调优其他程序时或许会用到，比如JVM
+
+去除Profiling support (EXPERIMENTAL)
+>不是内核开发人员应该用不到
+
+### Kernel hacking
+
+去除了Enable --deprecated logic/Debug filesystem
+
+### Cryptographic API
+
+关于信息安全部分的API,全部去除
+
+### Library routines
+
+貌似会根据前面的配置来自动设置,网上说保持默认即可,但还是全部删去(只能保留为模块或编入内核的全部保留为模块)
+
+### File System
+
+去除了CD-ROM/DVD Filesystems
+去除Miscellaneous devices
+>杂七杂八的驱动，扬声器，笔记本扩展按键等
+
+去除Advanced partition selection
+>如果不是和其他系统共存，可以不选
+
+去除ext3
+>实在是因为inst_ram放不下才去掉的
+
+# 参考资料
+
+[2.6.36内核优化](https://blog.csdn.net/sploving/article/details/6223253)
+>原文链接丢失,只能放copy版本的(关键是还ctrl v了两遍= =)

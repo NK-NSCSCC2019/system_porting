@@ -1,7 +1,7 @@
 export CROSS_COMPILE ?= mipsel-linux-
 
 OBJDIR = ./obj
-kernel = vmlinux-2.0
+kernel = vmlinux-3.0
 
 all:
 	make compile
