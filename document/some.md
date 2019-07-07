@@ -15,3 +15,18 @@
 
 trace_ref = $fopen(`TRACE_REF_FILE, "w");
 导致文件指针异常,无法正常表示debug_wb_pc等东西
+
+## verilog语法
+
+### `ifdef、`else、`endif、`define
+
+条件编译指令,类似C++和makefile中的用法
+
+### module #()
+
+可以提供外部用的常熟参数
+
+### generate
+
+ generate语句允许细化时间（Elaboration-time）的选取或者某些语句的重复。这些语句可以包括模块实例引用的语句、连续赋值语句、always语句、initial语句和门级实例引用语句等。细化时间是指仿真开始前的一个阶段，此时所有的设计模块已经被链接到一起，并完成层次的引用。
+ >不是很懂
