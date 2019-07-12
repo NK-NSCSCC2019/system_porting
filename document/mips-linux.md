@@ -13,6 +13,7 @@
         - [生成的coe文件过大](#生成的coe文件过大)
         - [反汇编有问题](#反汇编有问题)
         - [汇编和反汇编不是互为逆过程](#汇编和反汇编不是互为逆过程)
+    - [idea](#idea)
 
 <!-- /TOC -->
 # MIPS Linux 移植
@@ -97,3 +98,13 @@ ${CROSS_COMPILE}objdump -alD vmlinux > test.s
 [objdump -D 输出的东西可以经修改后再编译吗？](https://www.zhihu.com/question/51050736)
 [Trying to assemble the output of an disassembler (such as objdump) [duplicate]](https://stackoverflow.com/questions/8510129/trying-to-assemble-the-output-of-an-disassembler-such-as-objdump)
 [How to disassemble, modify and then reassemble a Linux executable?](https://stackoverflow.com/questions/4309771/how-to-disassemble-modify-and-then-reassemble-a-linux-executable)
+
+## idea
+
+暂时考虑的是利用龙芯启动linux内核的方法--用串口和SPI Flash控制器往箱子上烧PMON,然后利用PMON的load指令,从本机的tftp服务器上,把Linux内核下载到Flash中,并利用PMON的指令启动.
+因此需要CPU支持串口,网口,SPI
+>但是MIPS要支持外设的话,需要实现虚拟地址,也就是需要TLB和MMU
+并且关于外设的CP0寄存器,需要区别user Mode和kernel Mode,因此还需要实现一堆CP0寄存器
+
+是否还需要考虑切换用户态和内核态的时候,保留一块内存用于存放重要寄存器的信息
+同时还需要新加对更多异常的处理,比如cache,TLB缺失等情况
