@@ -8,15 +8,19 @@
         - [objdump](#objdump)
         - [gcc](#gcc)
         - [.lds](#lds)
-    - [DONE](#done)
-    - [problem](#problem)
-        - [生成的coe文件过大](#生成的coe文件过大)
-        - [反汇编有问题](#反汇编有问题)
-        - [汇编和反汇编不是互为逆过程](#汇编和反汇编不是互为逆过程)
-    - [idea](#idea)
+    - [汇编和反汇编不是互为逆过程](#汇编和反汇编不是互为逆过程)
+    - [vivado IP核](#vivado-ip核)
+        - [inst_sram_addr](#inst_sram_addr)
+        - [block memory](#block-memory)
+    - [verilog语法](#verilog语法)
+        - [`ifdef、`else、`endif、`define](#ifdefelseendifdefine)
+        - [module #()](#module-)
+        - [generate](#generate)
 
 <!-- /TOC -->
 # MIPS Linux 移植
+
+记录移植Linux过程中新学习到的知识
 
 ## Makefile/mipsel-linux-gcc 语法
 
@@ -71,27 +75,7 @@ main.elf: start.o libinst.a
 
 链接脚本文件,暂时没去深入了解
 
-## DONE
-
-去除vmlinux格式,只保留汇编的代码段和数据段,以此来生成inst_ram.coe和data_ram.coe
-将vmlinux反汇编成test.s
-
-## problem
-
-### 生成的coe文件过大
-
-可以尝试把vmlinux反汇编成test.s,然后删掉一部分,再重新编译成coe
->尝试裁剪了内核,但是裁剪的内核反而比原来的还要大
-
-### 反汇编有问题
-
-```Makefile
-${CROSS_COMPILE}objdump -alD vmlinux > test.s
-```
-
-这句无法停止,可能是因为结果文件太大,再加上-a编译选项时间过长
-
-### 汇编和反汇编不是互为逆过程
+## 汇编和反汇编不是互为逆过程
 
 生成的test.s带有太多冗余信息,无法编译
 汇编和反汇编仅仅只是理论上可能互为逆过程,实际过程中很难达到,参考如下:
@@ -99,12 +83,30 @@ ${CROSS_COMPILE}objdump -alD vmlinux > test.s
 [Trying to assemble the output of an disassembler (such as objdump) [duplicate]](https://stackoverflow.com/questions/8510129/trying-to-assemble-the-output-of-an-disassembler-such-as-objdump)
 [How to disassemble, modify and then reassemble a Linux executable?](https://stackoverflow.com/questions/4309771/how-to-disassemble-modify-and-then-reassemble-a-linux-executable)
 
-## idea
+## vivado IP核
 
-暂时考虑的是利用龙芯启动linux内核的方法--用串口和SPI Flash控制器往箱子上烧PMON,然后利用PMON的load指令,从本机的tftp服务器上,把Linux内核下载到Flash中,并利用PMON的指令启动.
-因此需要CPU支持串口,网口,SPI
->但是MIPS要支持外设的话,需要实现虚拟地址,也就是需要TLB和MMU
-并且关于外设的CP0寄存器,需要区别user Mode和kernel Mode,因此还需要实现一堆CP0寄存器
+### inst_sram_addr
 
-是否还需要考虑切换用户态和内核态的时候,保留一块内存用于存放重要寄存器的信息
-同时还需要新加对更多异常的处理,比如cache,TLB缺失等情况
+龙芯给出的inst_sram ip核只接受17位地址,即cpu_inst_addr[19:2],后面如果inst_sram还是放不下Linux内核,可以尝试修改inst_sram的ip核,也许可以扩大容量.
+>/home/lin/loongson/lab/func_test_v0.01/soc_sram_func/run_vivado/mycpu_prj1/mycpu.ip_user_files/ip/inst_ram
+
+目前已将测试的工程文件修改了
+
+### block memory
+
+尝试以后发现,vivado给的block memory并不像显示的那样write depth能达到1048576,试了几次发现最大只能到达373760(365×1024)
+
+## verilog语法
+
+### `ifdef、`else、`endif、`define
+
+条件编译指令,类似C++和makefile中的用法
+
+### module #()
+
+可以提供外部用的常熟参数
+
+### generate
+
+ generate语句允许细化时间（Elaboration-time）的选取或者某些语句的重复。这些语句可以包括模块实例引用的语句、连续赋值语句、always语句、initial语句和门级实例引用语句等。细化时间是指仿真开始前的一个阶段，此时所有的设计模块已经被链接到一起，并完成层次的引用。
+ >不是很懂

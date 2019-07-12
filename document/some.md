@@ -1,32 +1,39 @@
 # 杂项
 
-## inst_sram_addr
+## DONE
 
-龙芯给出的inst_sram ip核只接受17位地址,即cpu_inst_addr[19:2],后面如果inst_sram还是放不下Linux内核,可以尝试修改inst_sram的ip核,也许可以扩大容量.
->/home/lin/loongson/lab/func_test_v0.01/soc_sram_func/run_vivado/mycpu_prj1/mycpu.ip_user_files/ip/inst_ram
+去除vmlinux格式,只保留汇编的代码段和数据段,以此来生成inst_ram.coe和data_ram.coe
+将vmlinux反汇编成test.s
 
-目前已将测试的工程文件修改了
+## problem
 
-## block memory
+### 生成的coe文件过大
 
-尝试以后发现,vivado给的block memory并不像显示的那样write depth能达到1048576,试了几次发现最大只能到达373760(365×1024)
+可以尝试把vmlinux反汇编成test.s,然后删掉一部分,再重新编译成coe
+>尝试裁剪了内核,但是裁剪的内核反而比原来的还要大
+
+### 反汇编有问题
+
+```Makefile
+${CROSS_COMPILE}objdump -alD vmlinux > test.s
+```
+
+这句无法停止,可能是因为结果文件太大,再加上-a编译选项时间过长
 
 ## DEBUG
+
+>testbench.v
 
 trace_ref = $fopen(`TRACE_REF_FILE, "w");
 导致文件指针异常,无法正常表示debug_wb_pc等东西
 
-## verilog语法
+## idea
 
-### `ifdef、`else、`endif、`define
+暂时考虑的是利用龙芯启动linux内核的方法--用串口和SPI Flash控制器往箱子上烧PMON,然后利用PMON的load指令,从本机的tftp服务器上,把Linux内核下载到Flash中,并利用PMON的指令启动.
+因此需要CPU支持串口,网口,SPI
+>但是MIPS要支持外设的话,需要实现虚拟地址,也就是需要TLB和MMU
+并且关于外设的CP0寄存器,需要区别user Mode和kernel Mode,因此还需要实现一堆CP0寄存器
 
-条件编译指令,类似C++和makefile中的用法
+是否还需要考虑切换用户态和内核态的时候,保留一块内存用于存放重要寄存器的信息
+同时还需要新加对更多异常的处理,比如cache,TLB缺失等情况
 
-### module #()
-
-可以提供外部用的常熟参数
-
-### generate
-
- generate语句允许细化时间（Elaboration-time）的选取或者某些语句的重复。这些语句可以包括模块实例引用的语句、连续赋值语句、always语句、initial语句和门级实例引用语句等。细化时间是指仿真开始前的一个阶段，此时所有的设计模块已经被链接到一起，并完成层次的引用。
- >不是很懂

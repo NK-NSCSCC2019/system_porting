@@ -159,10 +159,10 @@ EntryHi &ensp;（要写入TLB的虚页号）
 |TLBWI|Write Indexed TLB Entry|
 |TLBWR|Write Random TLB Entry|
 
-西北工业大学新增的指令
-![指令](/picture/西北工业大学指令.png)
 北京科技大学新增的指令
 ![指令](/picture/北京科技大学指令.png)
+西北工业大学新增的指令
+![指令](/picture/西北工业大学指令.png)
 清华大学指令
 ![指令](/picture/清华大学指令.png)
 
